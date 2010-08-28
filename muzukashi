@@ -1,0 +1,36 @@
+#! /usr/bin/env ruby
+require 'optparse' 
+require File.join(File.join(File.dirname(__FILE__), "muzukashi"))
+
+help = <<HELP
+Muzukashi is a small issue tracker.
+HELP
+
+if ARGV.empty?
+  puts help
+end
+
+case ARGV[0]
+when "init"
+  if Muzukashi.create_cage(".")
+    puts "cage created. now go hunt some bugs."
+  end
+when "add"
+  if ARGV[1].nil?
+    puts "need a bug."
+    exit
+   end
+  if Muzukashi.capture_bug(ARGV[1])
+    puts "succes."
+  end
+
+when "list"
+  bugs = Muzukashi.read_bugs
+ if bugs.nil? || bugs.empty?
+  puts "don't have any bugs. add one"
+  exit
+  end
+puts bugs
+end
+
+
