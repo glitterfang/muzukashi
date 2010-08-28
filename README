@@ -1,0 +1,41 @@
+      ,_    /) (\    _,
+       >>  <<,_,>>  <<
+      //   _0.-.0_   \\
+      \'._/       \_.'/
+       '-.\.--.--./.-'
+       __/ : :Y: : \ _
+';,  .-(_| : : | : : |_)-.  ,:'
+ \\/.'  |: : :|: : :|  `.\//
+  (/    |: : :|: : :|    \)
+        |: : :|: : :;
+       /\ : : | : : /\
+      (_/'.: :.: :.'\_)
+       \\  `""`""`  //
+        \\         //
+         ':.     .:'
+          
+       % muzukashi % 
+
+% what %
+
+muzukashi is a small, command-line driven 
+issue tracker.  Issues are saved in text,
+ and stored in .muzukash.  Inspired by
+later, a python project.
+
+% how %
+
+$ muzu ->
+          1. doesn't save files          (fixed)
+          2. not fast enough             (confirmed)
+
+$ muzu add "specifiynig .muzukashi directory" -> 
+          issue saved. id: 3
+
+$ muzu close 3 ->
+           issue 3: specifying .muzukashi directory closed.
+
+$ muzu history ->
+           specifying .muzukashi directory        August 17 2010
+
+run $ muzu help for more commands
