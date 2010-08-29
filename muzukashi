@@ -6,10 +6,6 @@ help = <<HELP
 Muzukashi is a small issue tracker.
 HELP
 
-if ARGV.empty?
-  puts help
-end
-
 case ARGV[0]
 when "init"
   if Muzukashi.create_cage(".")
@@ -24,13 +20,17 @@ when "add"
     puts "succes."
   end
 
-when "list"
-  bugs = Muzukashi.read_bugs
- if bugs.nil? || bugs.empty?
-  puts "don't have any bugs. add one"
-  exit
+when nil
+Muzukashi.read_bugs(true)
+when "help"
+  puts help
+
+when "rm"
+  if ARGV[1].nil?
+    puts "you need to tell me an id to delete"
+    exit
   end
-puts bugs
+  Muzukashi.remove_bug(ARGV[0])
 end
 
 
