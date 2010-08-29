@@ -58,6 +58,10 @@ class MuzukashiTest < Test::Unit::TestCase
     should "return hash of hashes of bugs" do
       assert @bugs.class == Hash
     end
+
+    should "cache mapping to /tmp/muzukashi_cache.tmp" do
+      assert File.exist?("/tmp/muzukashi_cache")
+    end
   end
 
   context "removing the bugs" do 

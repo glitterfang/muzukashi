@@ -5,7 +5,7 @@ require 'yaml'
 
 module Muzukashi
    mapping = {}
-
+   CACHE = "/tmp/muzukashi_cache.tmp"
   def self.create_cage(dir)
     if File.exist?(File.join(dir, '/.cage'))
       raise ArgumentError, "already a cage in #{dir}"
@@ -32,6 +32,7 @@ module Muzukashi
       YAML.dump(contents, f)
     end
     Dir.chdir(old_path)
+    
   end
 
   def self.read_bugs(print=true)
@@ -41,26 +42,63 @@ module Muzukashi
       puts "no bugs"
       exit
     end
+
    mapping = {}
+
    @bugs.each_with_index do |f, i|
       name = Pathname.new(f).basename.to_s
       content = File.open(f) { |z| z.read }
       hashed_content = YAML.load(content).to_hash
       hashed_content[:id] = (i + 1).to_s
       mapping[hashed_content[:id]] = f
-     begining = hashed_content[:id] + "." + hashed_content[:name]
+
+      cache = get_cache
+      cache.invert
+      if cache[f]
+       begining = cache[f] + "." + hashed_content[:name]
+      else
+       begining = hashed_content[:id] + "." + hashed_content[:name]
+      end
+
      ending = hashed_content[:created].to_s + "(" + hashed_content[:state].to_s + ")"
       puts begining.ljust(50) + ending.rjust(20) if print
    end
-    mapping
+   self.write_cache(mapping) 
   end 
-  
+ 
+ def self.write_cache(map)
+   Dir.chdir("/tmp")
+    File.open("muzukashi_cache.tmp", "w") do |cache|
+      YAML.dump(map, cache)
+    end
+ end
+
+ def self.cache?
+  File.exist?(CACHE) 
+ end
+
+
+ def self.get_cache(mapping=nil)
+   if cache?
+     File.open(CACHE) do |cache|
+       return YAML.load(cache.read)
+     end
+   end
+ end
+
+ def update_cache(id)
+   cache = get_cache
+   if cache[id]
+     cache.delete(id)
+   end 
+ end 
+
   def self.remove_bug(id)
-    mapping = self.read_bugs(false)  
+    mapping = get_cache  
     delete = mapping[id.to_s]
     if delete
       FileUtils.rm(delete)
       true
      end
-  end
+   end
 end
