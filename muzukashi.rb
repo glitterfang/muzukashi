@@ -4,6 +4,8 @@ require 'pathname'
 require 'yaml'
 
 module Muzukashi
+   mapping = {}
+
   def self.create_cage(dir)
     if File.exist?(File.join(dir, '/.cage'))
       raise ArgumentError, "already a cage in #{dir}"
@@ -32,13 +34,35 @@ module Muzukashi
     Dir.chdir(old_path)
   end
 
-  def self.read_bugs
+  def self.read_bugs(print)
     finished_hash = {}
-   Dir.glob(".cage/*").each do |f|
+    @bugs = Dir.glob(".cage/*")
+    if @bugs.nil? || @bugs.empty?
+      puts "no bugs"
+      exit
+    end
+   mapping = {}
+   @bugs.each_with_index do |f, i|
       name = Pathname.new(f).basename.to_s
       content = File.open(f) { |z| z.read }
-      finished_hash[name.to_sym] = YAML.load(content)
+      hashed_content = YAML.load(content).to_hash
+      hashed_content[:id] = (i + 1).to_s
+      mapping[hashed_content[:id]] = f
+     begining = hashed_content[:id] + "." + hashed_content[:name]
+     ending = hashed_content[:created].to_s + "(" + hashed_content[:state].to_s + ")"
+      puts begining.ljust(50) + ending.rjust(20) if print
    end
-   finished_hash
+    mapping
+  end 
+  
+  def self.remove_bug(id)
+    mapping = self.read_bugs(false)  
+    delete = mapping[id.to_s]
+    if delete
+      FileUtils.rm(delete)
+      puts "deleted #{id}"
+    else
+      puts "no bug with that id :("
+    end
   end
 end

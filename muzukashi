@@ -30,7 +30,7 @@ when "rm"
     puts "you need to tell me an id to delete"
     exit
   end
-  Muzukashi.remove_bug(ARGV[0])
+  Muzukashi.remove_bug(ARGV[1])
 end
 
 
