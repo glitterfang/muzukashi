@@ -34,7 +34,7 @@ module Muzukashi
     Dir.chdir(old_path)
   end
 
-  def self.read_bugs(print)
+  def self.read_bugs(print=true)
     finished_hash = {}
     @bugs = Dir.glob(".cage/*")
     if @bugs.nil? || @bugs.empty?
@@ -60,9 +60,7 @@ module Muzukashi
     delete = mapping[id.to_s]
     if delete
       FileUtils.rm(delete)
-      puts "deleted #{id}"
-    else
-      puts "no bug with that id :("
-    end
+      true
+     end
   end
 end

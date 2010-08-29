@@ -47,6 +47,7 @@ class MuzukashiTest < Test::Unit::TestCase
     setup do
       check_cage
       Muzukashi.create_cage(".")
+      Muzukashi.capture_bug("starling boy")
       @bugs = Muzukashi.read_bugs
     end
 
@@ -56,6 +57,18 @@ class MuzukashiTest < Test::Unit::TestCase
 
     should "return hash of hashes of bugs" do
       assert @bugs.class == Hash
+    end
+  end
+
+  context "removing the bugs" do 
+    setup do
+     check_cage
+     Muzukashi.create_cage(".")
+      Muzukashi.capture_bug("starling")
+    end
+
+    should "be successful" do
+      assert Muzukashi.remove_bug(1)
     end
   end
 
