@@ -1,7 +1,11 @@
+#! /usr/bin/env ruby
+
 require 'active_support/secure_random'
 require 'fileutils'
 require 'pathname'
 require 'yaml'
+
+# Library
 
 module Muzukashi
    mapping = {}
@@ -37,7 +41,7 @@ module Muzukashi
 
   def self.read_bugs(print=true)
     finished_hash = {}
-    @bugs = Dir.glob(".cage/*")
+    @bugs = Dir.glob(".cage/*.txt")
     if @bugs.nil? || @bugs.empty?
       puts "no bugs"
       exit
@@ -94,11 +98,94 @@ module Muzukashi
  end 
 
   def self.remove_bug(id)
-    mapping = get_cache  
+    mapping = get_cache
+
+    if id == 'all'
+      mapping.each_pair do |bug|
+        bug.invert 
+      end
+    end
+
     delete = mapping[id.to_s]
     if delete
       FileUtils.rm(delete)
       true
      end
    end
+  
+
+ def self.hall?
+   File.exist?(".cage/hall") 
+ end
+
+ def self.build_hall
+   unless hall?
+     FileUtils.mkdir(".cage/hall")
+   end 
+ end
+
+ def self.do(id)
+  mapping = get_cache
+  
+  if mapping[id]
+
+    # TODO collapse this into single line.
+    unless hall?
+      build_hall
+    end
+
+    FileUtils.mv(mapping[id], ".cage/hall")
+    puts "did #{id}"
+    
+  end
+
+ end
 end
+
+ # Tool
+
+help = <<HELP
+Muzukashi is a small issue tracker:
+---
+add
+do
+rm
+HELP
+
+case ARGV[0]
+when "init"
+  if Muzukashi.create_cage(".")
+    puts "cage created. now go hunt some bugs."
+  end
+when "add"
+  if ARGV[1].nil?
+    puts "need a bug."
+    exit
+   end
+  if Muzukashi.capture_bug(ARGV[1])
+    puts "succes."
+  end
+
+when nil
+Muzukashi.read_bugs(true)
+when "help"
+  puts help
+
+when "rm"
+  if ARGV[1].nil?
+    puts "you need to tell me an id to delete"
+    exit
+  end
+
+  if Muzukashi.remove_bug(ARGV[1])
+    puts "removed #{ARGV[1]}"
+  end
+when "do"
+  if ARGV[1].nil?
+    puts "tell me an id"
+    exit
+  end
+  Muzukashi.do(ARGV[1])
+end
+
+
